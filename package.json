@@ -1,0 +1,17 @@
+{
+  "name": "zhihu-api-koa",
+  "version": "1.0.0",
+  "description": "zhihu api implemented with koa2 and RESTful design",
+  "main": "index.js",
+  "author": "Yikhan",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "koa": "^2.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  }
+}
