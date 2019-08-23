@@ -6,10 +6,11 @@
   "author": "Yikhan",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon index.js"
+    "dev": "nodemon index.js"
   },
   "dependencies": {
-    "koa": "^2.8.1"
+    "koa": "^2.8.1",
+    "koa-router": "^7.4.0"
   },
   "devDependencies": {
     "nodemon": "^1.19.1"
