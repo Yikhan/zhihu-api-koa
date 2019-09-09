@@ -6,13 +6,14 @@
   "author": "Yikhan",
   "license": "MIT",
   "scripts": {
-    "start" : "cross-env NODE_ENV=production node app",
+    "start": "cross-env NODE_ENV=production node app",
     "dev": "nodemon app"
   },
   "dependencies": {
     "koa": "^2.8.1",
     "koa-bodyparser": "^4.2.1",
     "koa-json-error": "^3.1.2",
+    "koa-parameter": "^3.0.1",
     "koa-router": "^7.4.0"
   },
   "devDependencies": {

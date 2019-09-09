@@ -2,6 +2,7 @@ const Koa = require('koa')
 const Router = require('koa-router')
 const bodyParser = require('koa-bodyparser')
 const error = require('koa-json-error')
+const parameter = require('koa-parameter')
 
 // 不写具体文件名nodejs会自动找index.js文件
 const routingInit = require('./routes')
@@ -22,6 +23,8 @@ app.use(error({
   postFormat: (err, { stack, ...rest }) => process.env.NODE_ENV === 'production' ? rest : { stack, ...rest }
 }));
 app.use(bodyParser())
+// koa-paramter要传入app自身
+app.use(parameter(app))
 routingInit(app)
 
 // 监听端口
