@@ -7,7 +7,7 @@ const router = new Router()
 // 使用带前缀的路由 方便中间件编写
 const userRouter = new Router({ prefix: '/users' })
 
-cons = async (ctx, next) => {
+const auth = async (ctx, next) => {
   if (ctx.url !== '/users') {
     ctx.throw(401)
   }
@@ -37,31 +37,39 @@ app.use(async (ctx, next) => {
 })
 */
 
+const db = [{ name: 'Li Lei' }]
+
 router.get('/', ctx => {
   ctx.body = 'main page'
 })
 
 userRouter.get('/', ctx => {
-  ctx.body = [{ name: 'Li Lei' }, { name: 'Han Meimei' }]
+  // 可以使用set设置响应头
+  ctx.set('Allow', 'GET, POST')
+  ctx.body = db
 })
 
 userRouter.post('/', ctx => {
-  ctx.body = 'create user'
+  db.push(ctx.request.body)
+  ctx.body = ctx.request.body
 })
 
 userRouter.get('/:id', ctx => {
-  ctx.body = `this is user: ${ctx.params.id}`
+  ctx.body = db[parseInt(ctx.params.id)]
 })
 
 userRouter.put('/:id', ctx => {
-  ctx.body = { name: 'updated Li Lei' }
+  const index = parseInt(ctx.params.id)
+  db[index] = ctx.request.body
+  ctx.body = ctx.request.body
 })
 
 userRouter.delete('/:id', ctx => {
-  ctx.body = 'create user'
+  const index = parseInt(ctx.params.id)
+  db.splice(index, 1)
+  // 请求成功但无返回数据，使用204状态
+  ctx.status = 204
 })
-
-
 
 app.use(bodyParser())
 // 注册koa-router
