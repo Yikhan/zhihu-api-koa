@@ -16,3 +16,5 @@ router.put('/:id', update)
 router.delete('/:id', del)
 
 module.exports = router
+
+

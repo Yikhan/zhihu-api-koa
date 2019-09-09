@@ -8,6 +8,9 @@ class UserController {
   }
 
   findById(ctx) {
+    if (parseInt(ctx.params.id) >= db.length) {
+      ctx.throw(412, 'Precondition fail: id exceeds boundary')
+    }
     ctx.body = db[parseInt(ctx.params.id)]
   }
 

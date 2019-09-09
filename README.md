@@ -36,3 +36,46 @@ app.use(bodyparser)
 ### header
 
 >ctx.header
+
+## koa 基本用法
+
+```javascript
+app.use(async (ctx, next) => {
+  if (ctx.url === '/') {
+    ctx.body = 'main page'
+  } else if (ctx.url === '/users') {
+    if (ctx.method === 'GET') {
+      ctx.body = 'user list'
+    } else if (ctx.method === 'POST') {
+      ctx.body = 'create user'
+    } else {
+      // 方法不允许
+      ctx.status = 405 
+    }
+  } else if (ctx.url.match(/\/users\/\w+/)) {
+    // 参数解析
+    const userId = ctx.url.match(/\/users\/(\w+)/)[1]
+    ctx.body = `this is user: ${userId}`
+  } else {
+    ctx.status = 404
+  }
+})
+```
+
+## 自定义错误处理中间件
+
+```javascript
+app.use(async (ctx, next) => {
+  try {
+    await next()
+  } catch(err) {
+    ctx.status = err.status || err.statusCode || 500
+    ctx.body = {
+      message: err.message
+    }
+  }
+})
+```
+
+需要注意的是上面的写法无法检测到404错误，404在进入该中间件之前就报错了
+用koa-json-error插件可以检测到404
