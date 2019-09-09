@@ -6,7 +6,7 @@
   "author": "Yikhan",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon app"
   },
   "dependencies": {
     "koa": "^2.8.1",
