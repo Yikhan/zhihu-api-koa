@@ -120,3 +120,57 @@ ctx.verifyParams({
 ```
 
 注意这里的verifyParams虽然名字上像在校验路由参数，但实际上校验的是请求体request.body
+
+## JWT 安全校验
+
+### Session 概念
+
+Session + Cookie方案的优缺点
+
+Pros:
+
+- server可以主动清除session，强制client重新验证
+- session保存在server，相对比较安全
+- 使用灵活，兼容性较好
+  
+Cons:
+
+- 跨越场景表现欠佳
+- 如果是分布式部署，要实现多机共享session机制
+- cookie容易被CSRF ( 跨域请求伪造攻击 )
+- 查询session可能需要数据库查询
+
+`sessionStorage` : 仅仅在当前会话下有效，关闭页面或浏览器后被清除
+
+`localStorage` : 除非被主动清除，否则永久保留
+
+### JWT 概念
+
+JWT = JSON Web Token 是一个开放标准 ( RFC 7519 )
+
+## MongoDB
+
+### 使用Schema的select属性
+
+使用mongoose的Schema函数时，可以使用select参数来控制某个数据项是否被api返回给client
+
+比如password这类敏感性信息显然是不能随意返回出去的
+
+```js
+const userSchema = new Schema({
+  name: { type: String, required: true },
+  password: { type: String, required: true, select: false }
+})
+```
+
+在返回的数据里可以看到password被略过了，这样可以非常方便地避免在前端代码里去filter这些敏感数据
+
+```json
+{
+    "_id": "5d7739f90bf08262f8cad713",
+    "name": "Xiao Ming",
+    "__v": 0
+}
+```
+
+

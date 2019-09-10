@@ -17,7 +17,16 @@ class UserController {
     // verification
     ctx.verifyParams({
       name: { type: 'string', required: true },
+      password: { type: 'string', required: true }
     })
+
+    // check if user already exists
+    const { name } = ctx.request.body
+    const duplicateUser = await User.findOne({ name })
+    if (duplicateUser) { 
+      ctx.throw(409, 'User already exists!') 
+    }
+
     // save new user
     const user = await new User(ctx.request.body).save()
     ctx.body = user
@@ -25,7 +34,8 @@ class UserController {
 
   async update(ctx) {
     ctx.verifyParams({
-      name: { type: 'string', required: true },
+      name: { type: 'string', required: false },
+      password: { type: 'string', required: false }
     })
     const user = await User.findByIdAndUpdate(ctx.params.id, ctx.request.body)
     if (!user) {
