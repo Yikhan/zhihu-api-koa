@@ -4,11 +4,12 @@ const bodyParser = require('koa-bodyparser')
 const error = require('koa-json-error')
 const parameter = require('koa-parameter')
 const mongoose = require('mongoose')
-const { getConnectionStr } = require('./config')
+require('dotenv').config()
 
 // 不写具体文件名nodejs会自动找index.js文件
 const routingInit = require('./routes')
 
+// 创建Koa实例
 const app = new Koa()
 
 const auth = async (ctx, next) => {
@@ -20,7 +21,7 @@ const auth = async (ctx, next) => {
 
 // 连接mongoDB
 mongoose.connect(
-  getConnectionStr(),
+  process.env.MONGODB_KEY,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,

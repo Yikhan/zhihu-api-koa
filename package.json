@@ -10,6 +10,8 @@
     "dev": "nodemon app"
   },
   "dependencies": {
+    "dotenv": "^8.1.0",
+    "jsonwebtoken": "^8.5.1",
     "koa": "^2.8.1",
     "koa-bodyparser": "^4.2.1",
     "koa-json-error": "^3.1.2",

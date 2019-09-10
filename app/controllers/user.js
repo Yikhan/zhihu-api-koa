@@ -1,4 +1,5 @@
 const User = require('../models/users')
+const JsonWebToken = require('jsonwebtoken')
 
 class UserController {
   async find(ctx) {
@@ -14,20 +15,21 @@ class UserController {
   }
 
   async create(ctx) {
-    // verification
+    // 校验
     ctx.verifyParams({
       name: { type: 'string', required: true },
       password: { type: 'string', required: true }
     })
 
-    // check if user already exists
+    // 判断用户是否已经存在
     const { name } = ctx.request.body
     const duplicateUser = await User.findOne({ name })
-    if (duplicateUser) { 
-      ctx.throw(409, 'User already exists!') 
+    if (duplicateUser) {
+      // 用户存在，抛出409冲突
+      ctx.throw(409, 'User already exists!')
     }
 
-    // save new user
+    // 保存新用户
     const user = await new User(ctx.request.body).save()
     ctx.body = user
   }
@@ -51,6 +53,23 @@ class UserController {
     }
     // 请求成功但无返回数据，使用204状态
     ctx.status = 204
+  }
+
+  async login(ctx) {
+    // 校验
+    ctx.verifyParams({
+      name: { type: 'string', required: true },
+      password: { type: 'string', required: true }
+    })
+    const user = await User.findOne(ctx.request.body)
+    if (!user) {
+      // 抛出401 鉴权失败
+      ctx.throw(401, 'Username or password invalid')
+    }
+    // JWT 生成令牌
+    const { _id, name } = user
+    const token = JsonWebToken.sign({ _id, name }, process.env.SECRET, { expiresIn: '1d' })
+    ctx.body = { token }
   }
 }
 
