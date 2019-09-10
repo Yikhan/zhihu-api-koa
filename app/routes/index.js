@@ -5,8 +5,8 @@ const fs = require('fs')
 module.exports = (app) => {
   fs.readdirSync(__dirname).forEach(file => {
     if (file === 'index.js') { return }
+    
     const route = require(`./${file}`)
-
     // allowMethods 允许使用options请求返回允许的方法
     // 自动返回405当收到未允许的方法请求时
     app.use(route.routes()).use(route.allowedMethods())

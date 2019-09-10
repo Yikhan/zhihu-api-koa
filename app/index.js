@@ -3,13 +3,13 @@ const Router = require('koa-router')
 const bodyParser = require('koa-bodyparser')
 const error = require('koa-json-error')
 const parameter = require('koa-parameter')
+const mongoose = require('mongoose')
+const { getConnectionStr } = require('./config')
 
 // 不写具体文件名nodejs会自动找index.js文件
 const routingInit = require('./routes')
 
 const app = new Koa()
-const router = new Router()
-const userRouter = new Router({ prefix: '/users' })
 
 const auth = async (ctx, next) => {
   if (ctx.url !== '/users') {
@@ -17,6 +17,17 @@ const auth = async (ctx, next) => {
   }
   await next()
 }
+
+// 连接mongoDB
+mongoose.connect(
+  getConnectionStr(),
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }, () => {
+    console.log('MongoDB Connection Success')
+  })
+mongoose.connection.on('error', console.error)
 
 app.use(error({
   // 设置错误格式 生产环境不显示stack堆栈的错误信息
