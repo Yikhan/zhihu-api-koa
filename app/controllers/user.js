@@ -1,57 +1,44 @@
-const db = [{ name: 'Li Lei' }]
+const User = require('../models/users')
 
 class UserController {
-  find(ctx) {
-    // 可以使用set设置响应头
-    ctx.set('Allow', 'GET, POST')
-    ctx.body = db
+  async find(ctx) {
+    ctx.body = await User.find()
   }
 
-  findById(ctx) {
-    // verification
-    const index = parseInt(ctx.params.id)
-    if (index >= db.length) {
-      ctx.throw(412, 'Precondition fail: id exceeds boundary')
+  async findById(ctx) {
+    const user = await User.findById(ctx.params.id)
+    if (!user) {
+      ctx.throw(404, 'User not found')
     }
-    // logic
-    ctx.body = db[index]
+    ctx.body = user
   }
 
-  create(ctx) {
+  async create(ctx) {
     // verification
     ctx.verifyParams({
       name: { type: 'string', required: true },
-      age: { type: 'number', required: false }
     })
-    // logic
-    db.push(ctx.request.body)
-    ctx.body = ctx.request.body
+    // save new user
+    const user = await new User(ctx.request.body).save()
+    ctx.body = user
   }
 
-  update(ctx) {
-    // verification
-    const index = parseInt(ctx.params.id)
-    if (index >= db.length) {
-      ctx.throw(412, 'Precondition fail: id exceeds boundary')
-    }
+  async update(ctx) {
     ctx.verifyParams({
       name: { type: 'string', required: true },
-      age: { type: 'number', required: false }
     })
-    // logic
-    db[index] = ctx.request.body
-    ctx.body = ctx.request.body
+    const user = await User.findByIdAndUpdate(ctx.params.id, ctx.request.body)
+    if (!user) {
+      ctx.throw(404, 'User not found')
+    }
+    ctx.body = user
   }
 
-  del(ctx) {
-    // verification
-    const index = parseInt(ctx.params.id)
-    if (index >= db.length) {
-      ctx.throw(412, 'Precondition fail: id exceeds boundary')
+  async del(ctx) {
+    const user = await User.findByIdAndDelete(ctx.params.id)
+    if (!user) {
+      ctx.throw(404, 'User not found')
     }
-    // logic
-    db.splice(index, 1)
-
     // 请求成功但无返回数据，使用204状态
     ctx.status = 204
   }

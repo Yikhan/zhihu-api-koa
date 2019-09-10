@@ -23,7 +23,8 @@ mongoose.connect(
   getConnectionStr(),
   {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: true
   }, () => {
     console.log('MongoDB Connection Success')
   })
