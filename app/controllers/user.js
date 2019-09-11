@@ -71,6 +71,14 @@ class UserController {
     const token = JsonWebToken.sign({ _id, name }, process.env.SECRET, { expiresIn: '1d' })
     ctx.body = { token }
   }
+
+  // 确认要更改的用户是当前用户自己，避免用户可以随意改其他用户数据的情况
+  async checkOwner(ctx, next) {
+    if (ctx.params.id !== ctx.state.user._id) {
+      ctx.throw(403, 'No access!')
+    }
+    await next()
+  }
 }
 
 module.exports = new UserController()

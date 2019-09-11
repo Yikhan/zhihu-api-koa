@@ -12,13 +12,6 @@ const routingInit = require('./routes')
 // 创建Koa实例
 const app = new Koa()
 
-const auth = async (ctx, next) => {
-  if (ctx.url !== '/users') {
-    ctx.throw(401)
-  }
-  await next()
-}
-
 // 连接mongoDB
 mongoose.connect(
   process.env.MONGODB_KEY,

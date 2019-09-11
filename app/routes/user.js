@@ -1,5 +1,6 @@
 const Router = require('koa-router')
-const { find, findById, create, update, del, login } = require('../controllers/user')
+const { find, findById, create, update, del, login, checkOwner } = require('../controllers/user')
+const { auth } = require('../auth')
 
 // 使用带前缀的路由 方便中间件编写
 const router = new Router({ prefix: '/users' })
@@ -11,9 +12,9 @@ router.get('/:id', findById)
 
 router.post('/', create)
 
-router.patch('/:id', update)
+router.patch('/:id', auth, checkOwner, update)
 
-router.delete('/:id', del)
+router.delete('/:id', auth, checkOwner, del)
 
 router.post('/login', login)
 

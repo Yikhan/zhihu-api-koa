@@ -2,41 +2,6 @@
 
 A project of building zhihu api with Koa2 and RESTful design
 
-## 获取Http请求参数
-
-- query
-- router params
-- body
-- header
-  
-### query
-
-如 ?q='a' 这类的链接参数都被保存在ctx的query属性里面
->ctx.query
-
-### router params
-
-路由参数，如 link/q/a 这类参数保存在ctx的params属性里面
->ctx.params
-
-### body
-
-请求体body一般在post和put请求中经常使用
-
-koa本身不支持解析body，需要安装额外的插件，官方推荐的是koa-bodyparser
-
-```js
-const bodyparser = require('koa-bodyparser')
-app.use(bodyparser)
-```
-
-现在可以在ctx中得到请求体
->ctx.request.body
-
-### header
-
->ctx.header
-
 ## koa 基本用法
 
 ```js
@@ -68,6 +33,41 @@ app.use(async (ctx, next) => {
 // 可以使用set设置响应头
 ctx.set('Allow', 'GET, POST')
 ```
+
+### 获取Http请求参数
+
+- query
+- router params
+- body
+- header
+  
+### query
+
+如 ?q=abc 这类的链接参数都被保存在ctx的query属性里面
+>ctx.query
+
+### router params
+
+路由参数，如 link/q/a 这类参数保存在ctx的params属性里面
+>ctx.params
+
+### body
+
+请求体body一般在post和put请求中经常使用
+
+koa本身不支持解析body，需要安装额外的插件，官方推荐的是koa-bodyparser
+
+```js
+const bodyparser = require('koa-bodyparser')
+app.use(bodyparser)
+```
+
+现在可以在ctx中得到请求体
+>ctx.request.body
+
+### header
+
+>ctx.header
 
 ## 自定义错误处理中间件
 
@@ -123,6 +123,8 @@ ctx.verifyParams({
 
 ## JWT 安全校验
 
+JWT = JSON Web Token 是一个开放标准 ( RFC 7519 )
+
 ### Session 概念
 
 Session + Cookie方案的优缺点
@@ -143,10 +145,6 @@ Cons:
 `sessionStorage` : 仅仅在当前会话下有效，关闭页面或浏览器后被清除
 
 `localStorage` : 除非被主动清除，否则永久保留
-
-### JWT 概念
-
-JWT = JSON Web Token 是一个开放标准 ( RFC 7519 )
 
 ## MongoDB
 
@@ -172,5 +170,3 @@ const userSchema = new Schema({
     "__v": 0
 }
 ```
-
-
