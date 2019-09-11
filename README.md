@@ -2,7 +2,7 @@
 
 A project of building zhihu api with Koa2 and RESTful design
 
-## koa 基本用法
+## 1. koa 基本用法
 
 ```js
 app.use(async (ctx, next) => {
@@ -34,24 +34,24 @@ app.use(async (ctx, next) => {
 ctx.set('Allow', 'GET, POST')
 ```
 
-### 获取Http请求参数
+### 1.1 获取Http请求参数
 
 - query
 - router params
 - body
 - header
   
-### query
+### 1.2 query
 
 如 ?q=abc 这类的链接参数都被保存在ctx的query属性里面
 >ctx.query
 
-### router params
+### 1.3 router params
 
 路由参数，如 link/q/a 这类参数保存在ctx的params属性里面
 >ctx.params
 
-### body
+### 1.4 body
 
 请求体body一般在post和put请求中经常使用
 
@@ -65,11 +65,11 @@ app.use(bodyparser)
 现在可以在ctx中得到请求体
 >ctx.request.body
 
-### header
+### 1.5 header
 
 >ctx.header
 
-## 自定义错误处理中间件
+## 2. 自定义错误处理中间件
 
 ```js
 app.use(async (ctx, next) => {
@@ -101,7 +101,7 @@ ctx可以直接抛出异常，并且指定status code，如果不设置错误信
 ctx.throw(412, 'Precondition fail: id exceeds boundary')
 ```
 
-## request校验
+## 3. request校验
 
 使用koa-parameter
 
@@ -121,11 +121,11 @@ ctx.verifyParams({
 
 注意这里的verifyParams虽然名字上像在校验路由参数，但实际上校验的是请求体request.body
 
-## JWT 安全校验
+## 4. JWT 安全校验
 
 JWT = JSON Web Token 是一个开放标准 ( RFC 7519 )
 
-### Session 概念
+### 4.1 Session 概念
 
 Session + Cookie方案的优缺点
 
@@ -146,9 +146,47 @@ Cons:
 
 `localStorage` : 除非被主动清除，否则永久保留
 
-## MongoDB
+### 4.2 使用jsonwebtoken库进行jwt校验
 
-### 使用Schema的select属性
+token一般存在在请求的header里，有种不同的数据形式，这里展示最常用的Bearer类型
+
+```js
+const JsonWebToken = require('jsonwebtoken')
+
+const auth = async (ctx, next) => {
+  const { authorization = ''} = ctx.request.header
+  // 去掉token最前面的Bearer字段
+  const token = authorization.replace('Bearer ', '')
+  try {
+    const user = JsonWebToken.verify(token, process.env.SECRET)
+    // 把user信息保存在ctx.state里面 (~ Best Practice)
+    ctx.state.user = user
+  } catch (err) {
+    ctx.throw(401, err.message)
+  }
+  // 继续执行下一个中间件
+  await next()
+}
+```
+
+校验函数的逻辑是：
+
+1. 从请求header里面获取token
+2. 校验token
+   - 成功 - 把校验后的user信息保存到ctx.state里面
+   - 失败 - 抛出401 Unauthorized异常
+
+如果使用koa-jwt的话，其逻辑也是如此，可以用一行代码方便地实现
+
+```js
+const jwt = require('koa-jwt')
+
+const auth = jwt({ secret: process.env.SECRET })
+```
+
+## 5. MongoDB
+
+### 5.1 使用Schema的select属性
 
 使用mongoose的Schema函数时，可以使用select参数来控制某个数据项是否被api返回给client
 
