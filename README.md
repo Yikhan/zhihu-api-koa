@@ -55,7 +55,7 @@ ctx.set('Allow', 'GET, POST')
 
 请求体body一般在post和put请求中经常使用
 
-koa本身不支持解析body，需要安装额外的插件，官方推荐的是koa-bodyparser
+koa本身不支持解析body，需要安装额外的插件，推荐koa-bodyparser或者koa-body，后者的功能更丰富
 
 ```js
 const bodyparser = require('koa-bodyparser')

@@ -1,9 +1,10 @@
 const Koa = require('koa')
 const Router = require('koa-router')
-const bodyParser = require('koa-bodyparser')
+const KoaBody = require('koa-body')
 const error = require('koa-json-error')
 const parameter = require('koa-parameter')
 const mongoose = require('mongoose')
+const path = require('path')
 require('dotenv').config()
 
 // 不写具体文件名nodejs会自动找index.js文件
@@ -27,8 +28,16 @@ mongoose.connection.on('error', console.error)
 app.use(error({
   // 设置错误格式 生产环境不显示stack堆栈的错误信息
   postFormat: (err, { stack, ...rest }) => process.env.NODE_ENV === 'production' ? rest : { stack, ...rest }
-}));
-app.use(bodyParser())
+}))
+
+app.use(KoaBody({
+  multipart: true,
+  formidable: {
+    uploadDir: path.join(__dirname, '/public/uploads'),
+    keepExtensions: true
+  }
+}))
+
 // koa-paramter要传入app自身
 app.use(parameter(app))
 routingInit(app)
