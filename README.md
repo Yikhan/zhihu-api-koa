@@ -208,3 +208,18 @@ const userSchema = new Schema({
     "__v": 0
 }
 ```
+
+## 6. 文件上传
+
+使用koa-static可以配置静态文件的访问链接
+
+```js
+app.use(KoaStatic(path.join(__dirname, 'public')))
+```
+
+这样root/public就可以被默认设置为静态文件的链接前缀，只要通过下面这样的链接就可以直接访问文件了
+
+><http://localhost:3001/uploads/upload_f6eb90ba96eba6f848a232198508f3ae.png>
+
+注意这里文件的实际上传目录为public/uploads，通过koa-static处理后前面的public就可以被直接省略掉了
+

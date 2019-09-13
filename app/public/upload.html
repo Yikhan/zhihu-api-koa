@@ -1,0 +1,7 @@
+<div style="display: flex; justify-content: center;">
+  <form action="/upload" enctype="multipart/form-data" method="POST">
+    <!-- 这里的name属性对应ctx.request.files.file这个变量 名字必须一致 -->
+    <input type="file" name="file" accept="image/*"> 
+    <button type="submit">Upload your file</button>
+  </form>
+</div>
