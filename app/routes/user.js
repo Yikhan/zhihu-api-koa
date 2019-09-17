@@ -10,7 +10,8 @@ const {
   listFollowing,
   listFollowers,
   follow,
-  unfollow
+  unfollow,
+  checkUserExist
 } = require('../controllers/user')
 const { auth } = require('../auth')
 
@@ -26,9 +27,9 @@ router.get('/:id/following', listFollowing)
 
 router.get('/:id/followers', listFollowers)
 
-router.put('/follow/:id', auth, follow)
+router.put('/follow/:id', auth, checkUserExist, follow)
 
-router.delete('/follow/:id', auth, unfollow)
+router.delete('/follow/:id', auth, checkUserExist, unfollow)
 
 router.post('/', create)
 
