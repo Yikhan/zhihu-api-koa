@@ -90,6 +90,45 @@ class UserController {
     }
     await next()
   }
+
+  // 获取用户的关注列表，即关注了哪些其他用户
+  async listFollowing(ctx) {
+    const user = await User.findById(ctx.params.id).select('+following').populate('following')
+    if (!user) { ctx.throw(404) }
+    ctx.body = user.following
+  }
+
+  // 获取粉丝列表
+  async listFollowers(ctx) {
+    const followersList = await User.find({ following: ctx.params.id })
+    ctx.body = followersList
+  }
+
+  // 关注某用户
+  async follow(ctx) {
+    // 登陆后当前用户的信息已经被保存在ctx.state.user里面了
+    const me = await User.findById(ctx.state.user._id).select('+following')
+    // 如果要关注的用户不在关注列表里面则添加 注意mongosDB的_id字段并不是字符串
+    if (!me.following.map(id => id.toString()).includes(ctx.params.id)) {
+      me.following.push(ctx.params.id)
+      // 保存更新结果
+      me.save()
+    }
+    ctx.status = 204
+  }
+
+  // 取消关注某用户
+  async unfollow(ctx) {
+    const me = await User.findById(ctx.state.user._id).select('+following')
+    // 找到目标用户在关注列表里面的索引
+    const index = me.following.map(id => id.toString()).indexOf(ctx.params.id)
+    // 从关注列表里面删除
+    if (index > -1) {
+      me.following.splice(index, 1)
+      me.save()
+    }
+    ctx.status = 204
+  }
 }
 
 module.exports = new UserController()

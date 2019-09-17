@@ -1,8 +1,9 @@
 
 getQueryFileds = (fields) => {
-  return fields.split(';')
-  .filter(f => f) // need to filter out empty string
-  .map(f => ' +' + f).join('')
+  return fields ? 
+    fields.split(';')
+    .filter(f => f) // need to filter out empty string
+    .map(f => ' +' + f).join('') : ''
 }
 
 module.exports = {

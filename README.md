@@ -41,17 +41,17 @@ ctx.set('Allow', 'GET, POST')
 - body
 - header
   
-### 1.2 query
+### 1.1.1 query
 
 如 ?q=abc 这类的链接参数都被保存在ctx的query属性里面
 >ctx.query
 
-### 1.3 router params
+### 1.1.2 router params
 
 路由参数，如 link/q/a 这类参数保存在ctx的params属性里面
 >ctx.params
 
-### 1.4 body
+### 1.1.3 body
 
 请求体body一般在post和put请求中经常使用
 
@@ -65,9 +65,28 @@ app.use(bodyparser)
 现在可以在ctx中得到请求体
 >ctx.request.body
 
-### 1.5 header
+### 1.1.4 header
 
 >ctx.header
+
+### 1.2 注册中间件到路由上
+
+非常简单，只需要在router.method函数上设置第二个参数即可
+
+```js
+const find = require('./controller')
+const Router = require('koa-router')
+const router = new Router({ prefix: '/users' })
+
+router.get('/', find)
+```
+
+如果要使用多个中间件就继续添加：
+
+```js
+// auth鉴权类中间件一般要放在第一个
+router.get('/', auth, find, find2, find3)
+```
 
 ## 2. 自定义错误处理中间件
 
@@ -176,7 +195,7 @@ const auth = async (ctx, next) => {
    - 成功 - 把校验后的user信息保存到ctx.state里面
    - 失败 - 抛出401 Unauthorized异常
 
-如果使用koa-jwt的话，其逻辑也是如此，可以用一行代码方便地实现
+如果使用koa-jwt的话，其内部逻辑也是如此，可以用一行代码方便地实现，代替上面整个函数
 
 ```js
 const jwt = require('koa-jwt')

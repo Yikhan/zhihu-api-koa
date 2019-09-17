@@ -15,7 +15,7 @@ const userSchema = new Schema({
     type: [{
       company: { type: String },
       occupation: { type: String }
-    }], 
+    }],
     select: false
   },
   educations: {
@@ -25,7 +25,11 @@ const userSchema = new Schema({
       diploma: { type: Number, enum: [1, 2, 3, 4, 5] },
       enrollment_year: { type: Number },
       graduation_year: { type: Number }
-    }], 
+    }],
+    select: false
+  },
+  following: {
+    type: [{ type: Schema.Types.ObjectId, ref: 'User' }], // 引用User的id 相当于关系型数据库的外键
     select: false
   }
 })
