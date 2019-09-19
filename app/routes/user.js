@@ -12,7 +12,7 @@ const {
   follow,
   unfollow,
   checkUserExist
-} = require('../controllers/user')
+} = require('../controllers/users')
 const { auth } = require('../auth')
 
 // 使用带前缀的路由 方便中间件编写
