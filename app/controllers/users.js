@@ -5,10 +5,12 @@ const { getQueryFileds } = require('./helper')
 class UserController {
   async find(ctx) {
     // 分页
-    const { per_page = 5, page = 1 } = ctx.request.query
+    const { per_page = 10, page = 1 } = ctx.request.query
     const showPerPage = Math.max(parseInt(per_page), 1)
     const skipPage = Math.max(parseInt(page), 1) - 1
-    ctx.body = await User.find().limit(showPerPage).skip(skipPage * showPerPage)
+    ctx.body = await User.find()
+      .find({ name: new RegExp(ctx.query.q, "i") }) // 模糊搜索
+      .limit(showPerPage).skip(skipPage * showPerPage)
   }
 
   async findById(ctx) {
