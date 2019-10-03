@@ -17,7 +17,10 @@ class UserController {
     const { fields } = ctx.query
     const fieldsSelected = getQueryFileds(fields)
     console.log('fields query: ' + fieldsSelected);
-    const user = await User.findById(ctx.params.id).select(fieldsSelected)
+    const user = await User.findById(ctx.params.id)
+      .select(fieldsSelected)
+      .populate('locations')
+      
     if (!user) {
       ctx.throw(404, 'User not found')
     }
@@ -52,7 +55,7 @@ class UserController {
       gender: { type: 'string', required: false },
       headline: { type: 'string', required: false },
       locations: { type: 'array', itemType: 'string', required: false },
-      industries: { type: 'string', required: false },
+      industries: { type: 'array', itemType: 'string', required: false },
       careers: { type: 'array', itemType: 'object', required: false },
       educations: { type: 'array', itemType: 'object', required: false },
     })

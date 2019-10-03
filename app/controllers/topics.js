@@ -15,7 +15,7 @@ class TopicController {
   async findById(ctx) {
     const { fields } = ctx.query
     const fieldsSelected = getQueryFileds(fields)
-    console.log('fields query: ' + fieldsSelected);
+    console.log('fields query: ' + fieldsSelected)
     const topic = await Topic.findById(ctx.params.id).select(fieldsSelected)
     ctx.body = topic
   }
