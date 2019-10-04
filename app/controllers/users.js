@@ -1,6 +1,6 @@
 const User = require('../models/users')
 const JsonWebToken = require('jsonwebtoken')
-const { getQueryFileds } = require('./helper')
+const { getQueryFileds, getQueryPopulates } = require('./helper')
 
 class UserController {
   async find(ctx) {
@@ -16,10 +16,11 @@ class UserController {
   async findById(ctx) {
     const { fields } = ctx.query
     const fieldsSelected = getQueryFileds(fields)
-    console.log('fields query: ' + fieldsSelected);
+    const fieldsPopulates = getQueryPopulates(fields)
+    console.log('fields query: ' + fieldsSelected)
     const user = await User.findById(ctx.params.id)
       .select(fieldsSelected)
-      .populate('locations')
+      .populate(fieldsPopulates)
       
     if (!user) {
       ctx.throw(404, 'User not found')
