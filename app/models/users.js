@@ -31,6 +31,10 @@ const userSchema = new Schema({
   following: {
     type: [{ type: Schema.Types.ObjectId, ref: 'User' }], // 引用User的id 相当于关系型数据库的外键
     select: false
+  },
+  followingTopics: {
+    type: [{ type: Schema.Types.ObjectId, ref: 'Topic' }], // 引用Topic的id 相当于关系型数据库的外键
+    select: false
   }
 })
 

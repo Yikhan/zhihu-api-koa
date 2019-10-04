@@ -104,7 +104,7 @@ class UserController {
   // 获取用户的关注列表，即关注了哪些其他用户
   async listFollowing(ctx) {
     const user = await User.findById(ctx.params.id).select('+following').populate('following')
-    if (!user) { ctx.throw(404) }
+    if (!user) { ctx.throw(404, 'User not found') }
     ctx.body = user.following
   }
 
@@ -135,6 +135,36 @@ class UserController {
     // 从关注列表里面删除
     if (index > -1) {
       me.following.splice(index, 1)
+      me.save()
+    }
+    ctx.status = 204
+  }
+
+  // 获取用户的关注话题列表
+  async listFollowingTopics(ctx) {
+    const user = await User.findById(ctx.params.id).select('+followingTopics').populate('followingTopics')
+    if (!user) { ctx.throw(404, 'User not found') }
+    ctx.body = user.followingTopics
+  }
+
+  // 关注话题
+  async followTopic(ctx) {
+    const me = await User.findById(ctx.state.user._id).select('+followingTopics')
+    // 如果要关注的话题不在关注列表里面则添加 注意mongosDB的_id字段并不是字符串
+    if (!me.followingTopics.map(id => id.toString()).includes(ctx.params.id)) {
+      me.followingTopics.push(ctx.params.id)
+      // 保存更新结果
+      me.save()
+    }
+    ctx.status = 204
+  }
+
+  // 取消关注话题
+  async unfollowTopic(ctx) {
+    const me = await User.findById(ctx.state.user._id).select('+followingTopics')
+    const index = me.followingTopics.map(id => id.toString()).indexOf(ctx.params.id)
+    if (index > -1) {
+      me.followingTopics.splice(index, 1)
       me.save()
     }
     ctx.status = 204
