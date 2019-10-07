@@ -58,4 +58,5 @@ app.use(parameter(app))
 routingInit(app)
 
 // 监听端口
-app.listen(3001, () => console.log('Server starts at port 3001'))
+const PortNumber = 1090
+app.listen(PortNumber, () => console.log(`Server starts at port ${PortNumber}`))

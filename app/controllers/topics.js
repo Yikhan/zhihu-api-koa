@@ -1,4 +1,5 @@
 const Topic = require('../models/topics')
+const User = require('../models/users')
 const { getQueryFileds } = require('./helper')
 
 class TopicController {
@@ -58,6 +59,12 @@ class TopicController {
     }
     // 注意mongoose返回的topic是更新前的
     ctx.body = topic
+  }
+
+  // 获取话题关注者列表
+  async listTopicFollowers(ctx) {
+    const followersList = await User.find({ followingTopics: ctx.params.id })
+    ctx.body = followersList
   }
 
 }

@@ -150,6 +150,7 @@ class UserController {
   // 关注话题
   async followTopic(ctx) {
     const me = await User.findById(ctx.state.user._id).select('+followingTopics')
+    console.log(me)
     // 如果要关注的话题不在关注列表里面则添加 注意mongosDB的_id字段并不是字符串
     if (!me.followingTopics.map(id => id.toString()).includes(ctx.params.id)) {
       me.followingTopics.push(ctx.params.id)
