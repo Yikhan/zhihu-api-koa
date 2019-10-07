@@ -1,5 +1,6 @@
 const Router = require('koa-router')
-const { 
+const {
+  checkUserExist,
   find, 
   findById, 
   create, 
@@ -14,7 +15,7 @@ const {
   listFollowingTopics,
   followTopic,
   unfollowTopic,
-  checkUserExist
+  listQuestions
 } = require('../controllers/users')
 const { checkTopicExist } = require('../controllers/topics')
 const { auth } = require('../auth')
@@ -39,6 +40,8 @@ router.delete('/follow/:id', auth, checkUserExist, unfollow)
 router.get('/:id/followTopics', listFollowingTopics)
 router.put('/followTopics/:id', auth, checkTopicExist, followTopic)
 router.delete('/followTopics/:id', auth, checkTopicExist, unfollowTopic)
+
+router.get('/:id/questions', listQuestions)
 
 module.exports = router
 

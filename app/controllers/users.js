@@ -1,8 +1,18 @@
 const User = require('../models/users')
+const Question = require('../models/questions')
 const JsonWebToken = require('jsonwebtoken')
 const { getQueryFileds, getQueryPopulates } = require('./helper')
 
 class UserController {
+
+  // 根据id判断用户是否存在
+  async checkUserExist(ctx, next) {
+    const user = await User.findById(ctx.params.id)
+    console.log(user)
+    if (!user) { ctx.throw(404, 'User not exists') }
+    await next()
+  }
+
   async find(ctx) {
     // 分页
     const { per_page = 10, page = 1 } = ctx.request.query
@@ -21,7 +31,7 @@ class UserController {
     const user = await User.findById(ctx.params.id)
       .select(fieldsSelected)
       .populate(fieldsPopulates)
-      
+
     if (!user) {
       ctx.throw(404, 'User not found')
     }
@@ -171,13 +181,12 @@ class UserController {
     ctx.status = 204
   }
 
-  // 根据id判断用户是否存在
-  async checkUserExist(ctx, next) {
-    const user = await User.findById(ctx.params.id)
-    console.log(user)
-    if (!user) { ctx.throw(404, 'User not exists') }
-    await next()
+  // 列出用户的提问
+  async listQuestions(ctx) {
+    const questions = await Question.find({ questioner: ctx.params.id })
+    ctx.body = questions
   }
+
 }
 
 module.exports = new UserController()
