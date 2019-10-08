@@ -1,13 +1,14 @@
 const Topic = require('../models/topics')
 const User = require('../models/users')
+const Question = require('../models/questions')
 const { getQueryFileds } = require('./helper')
 
 class TopicController {
-  
+
   async checkTopicExist(ctx, next) {
     const topic = await Topic.findById(ctx.params.id)
     if (!topic) { ctx.throw(404, 'Topic not exists') }
-    await next()   
+    await next()
   }
 
   async find(ctx) {
@@ -65,6 +66,12 @@ class TopicController {
   async listTopicFollowers(ctx) {
     const followersList = await User.find({ followingTopics: ctx.params.id })
     ctx.body = followersList
+  }
+
+  // 列出话题的相关问题
+  async listTopicQuestions(ctx) {
+    const questions = await Question.find({ topics: ctx.params.id })
+    ctx.body = questions
   }
 
 }

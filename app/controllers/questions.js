@@ -39,7 +39,7 @@ class QuestionController {
     console.log('fields query: ' + fieldsSelected)
     const question = await Question.findById(ctx.params.id)
       .select(fieldsSelected)
-      .populate('questioner')
+      .populate('questioner topics')
     ctx.body = question
   }
 
