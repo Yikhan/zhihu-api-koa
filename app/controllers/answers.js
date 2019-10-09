@@ -6,7 +6,9 @@ class AnswerController {
 
   async checkAnswerExist(ctx, next) {
     const answer = await Answer.findById(ctx.params.id).select('+answerer')
-    if (!answer) { ctx.throw(404, 'Answer not exists') }
+    if (!answer) { 
+      ctx.throw(404, 'Answer not exists') 
+    }
     if (answer.questionId !== ctx.params.questionId) {
       ctx.throw(404, 'Answer does not exist under this question')
     }
