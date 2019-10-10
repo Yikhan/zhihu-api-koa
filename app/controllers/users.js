@@ -1,5 +1,6 @@
 const User = require('../models/users')
 const Question = require('../models/questions')
+const Answer = require('../models/answers')
 const JsonWebToken = require('jsonwebtoken')
 const { getQueryFileds, getQueryPopulates } = require('./helper')
 
@@ -10,6 +11,14 @@ class UserController {
     const user = await User.findById(ctx.params.id)
     console.log(user)
     if (!user) { ctx.throw(404, 'User not exists') }
+    await next()
+  }
+
+  // 确认要更改的用户是当前用户自己，避免用户可以随意改其他用户数据的情况
+  async checkOwner(ctx, next) {
+    if (ctx.params.id !== ctx.state.user._id) {
+      ctx.throw(403, 'No access!')
+    }
     await next()
   }
 
@@ -103,14 +112,6 @@ class UserController {
     ctx.body = { token }
   }
 
-  // 确认要更改的用户是当前用户自己，避免用户可以随意改其他用户数据的情况
-  async checkOwner(ctx, next) {
-    if (ctx.params.id !== ctx.state.user._id) {
-      ctx.throw(403, 'No access!')
-    }
-    await next()
-  }
-
   // 获取用户的关注列表，即关注了哪些其他用户
   async listFollowing(ctx) {
     const user = await User.findById(ctx.params.id).select('+following').populate('following')
@@ -185,6 +186,69 @@ class UserController {
   async listQuestions(ctx) {
     const questions = await Question.find({ questioner: ctx.params.id })
     ctx.body = questions
+  }
+
+  // 获取用户点赞的答案
+  async listApprovedAnswers(ctx) {
+    const user = await User.findById(ctx.params.id).select('+approvedAnswers').populate('approvedAnswers')
+    if (!user) { ctx.throw(404, 'User not found') }
+    ctx.body = user.approvedAnswers
+  }
+
+  // 点赞答案
+  async approveAnswer(ctx, next) {
+    const me = await User.findById(ctx.state.user._id).select('+approvedAnswers')
+    if (!me.approvedAnswers.map(id => id.toString()).includes(ctx.params.id)) {
+      me.approvedAnswers.push(ctx.params.id)
+      // 保存更新结果
+      me.save()
+      // 该答案点赞数+1 使用$inc操作符
+      await Answer.findByIdAndUpdate(ctx.params.id, { $inc: {voteCount: 1} })
+    }
+    ctx.status = 204
+    await next()
+  }
+
+  // 取消点赞答案
+  async unapproveAnswer(ctx) {
+    const me = await User.findById(ctx.state.user._id).select('+approvedAnswers')
+    const index = me.approvedAnswers.map(id => id.toString()).indexOf(ctx.params.id)
+    if (index > -1) {
+      me.approvedAnswers.splice(index, 1)
+      me.save()
+      await Answer.findByIdAndUpdate(ctx.params.id, { $inc: {voteCount: -1} })
+    }
+    ctx.status = 204
+  }
+
+  // 获取用户反对的答案
+  async listDisapprovedAnswers(ctx) {
+    const user = await User.findById(ctx.params.id).select('+disapprovedAnswers').populate('disapprovedAnswers')
+    if (!user) { ctx.throw(404, 'User not found') }
+    ctx.body = user.disapprovedAnswers
+  }
+
+  // 反对答案
+  async disapproveAnswer(ctx, next) {
+    const me = await User.findById(ctx.state.user._id).select('+disapprovedAnswers')
+    if (!me.disapprovedAnswers.map(id => id.toString()).includes(ctx.params.id)) {
+      me.disapprovedAnswers.push(ctx.params.id)
+      // 保存更新结果
+      me.save()
+    }
+    ctx.status = 204
+    await next()
+  }
+
+  // 取消反对答案
+  async undisapproveAnswer(ctx) {
+    const me = await User.findById(ctx.state.user._id).select('+disapprovedAnswers')
+    const index = me.disapprovedAnswers.map(id => id.toString()).indexOf(ctx.params.id)
+    if (index > -1) {
+      me.disapprovedAnswers.splice(index, 1)
+      me.save()
+    }
+    ctx.status = 204
   }
 
 }

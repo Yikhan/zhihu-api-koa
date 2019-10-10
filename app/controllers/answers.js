@@ -9,7 +9,9 @@ class AnswerController {
     if (!answer) { 
       ctx.throw(404, 'Answer not exists') 
     }
-    if (answer.questionId !== ctx.params.questionId) {
+    // 只有路由里有问题id则需要检查问题是否存在
+    // 赞和反对答案的时候不需要检查
+    if (ctx.params.questionId && answer.questionId !== ctx.params.questionId) {
       ctx.throw(404, 'Answer does not exist under this question')
     }
     // 保存找到的answer，避免之后在其他函数里再次查找
