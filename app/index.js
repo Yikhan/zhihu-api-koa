@@ -29,7 +29,7 @@ mongoose.connect(
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useFindAndModify: true
+    useFindAndModify: false
   }, () => {
     console.log('MongoDB Connection Success')
   })
@@ -58,5 +58,5 @@ app.use(parameter(app))
 routingInit(app)
 
 // 监听端口
-const PortNumber = 1090
+const PortNumber = 2070
 app.listen(PortNumber, () => console.log(`Server starts at port ${PortNumber}`))

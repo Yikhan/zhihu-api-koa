@@ -43,6 +43,10 @@ const userSchema = new Schema({
   disapprovedAnswers: {
     type: [{ type: Schema.Types.ObjectId, ref: 'Answer' }],
     select: false
+  },
+  collectedAnswers: {
+    type: [{ type: Schema.Types.ObjectId, ref: 'Answer' }],
+    select: false
   }
 })
 

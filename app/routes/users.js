@@ -34,6 +34,10 @@ router.delete('/approveAnswers/:id', auth, checkAnswerExist, user.unapproveAnswe
 router.get('/:id/disapproveAnswers', user.listDisapprovedAnswers)
 router.put('/disapproveAnswers/:id', auth, checkAnswerExist, user.disapproveAnswer, user.unapproveAnswer)
 router.delete('/disapproveAnswers/:id', auth, checkAnswerExist, user.undisapproveAnswer)
+// 收藏回答
+router.get('/:id/collectAnswers', user.listCollectedAnswers)
+router.put('/collectAnswers/:id', auth, checkAnswerExist, user.collectAnswer)
+router.delete('/collectAnswers/:id', auth, checkAnswerExist, user.uncollectAnswer)
 
 module.exports = router
 
