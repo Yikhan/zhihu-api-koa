@@ -251,6 +251,36 @@ class UserController {
     ctx.status = 204
   }
 
+  // 获取收藏的回答
+  async listCollectedAnswers(ctx) {
+    const user = await User.findById(ctx.params.id).select('+collectedAnswers').populate('collectedAnswers')
+    if (!user) { ctx.throw(404, 'User not found') }
+    ctx.body = user.collectedAnswers
+  }
+
+  // 收藏回答
+  async collectAnswer(ctx, next) {
+    const me = await User.findById(ctx.state.user._id).select('+collectedAnswers')
+    if (!me.collectedAnswers.map(id => id.toString()).includes(ctx.params.id)) {
+      me.collectedAnswers.push(ctx.params.id)
+      // 保存更新结果
+      me.save()
+    }
+    ctx.status = 204
+    await next()
+  }
+
+  // 取消收藏答案
+  async uncollectAnswer(ctx) {
+    const me = await User.findById(ctx.state.user._id).select('+collectedAnswers')
+    const index = me.collectedAnswers.map(id => id.toString()).indexOf(ctx.params.id)
+    if (index > -1) {
+      me.collectedAnswers.splice(index, 1)
+      me.save()
+    }
+    ctx.status = 204
+  }
+
 }
 
 module.exports = new UserController()
