@@ -1,5 +1,4 @@
 const Answer = require('../models/answers')
-const User = require('../models/users')
 const { getQueryFileds } = require('./helper')
 
 class AnswerController {
