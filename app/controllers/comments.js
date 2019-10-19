@@ -5,8 +5,8 @@ class commentController {
 
   async checkCommentExist(ctx, next) {
     const comment = await Comment.findById(ctx.params.id).select('+commenter')
-    if (!comment) { 
-      ctx.throw(404, 'comment not exists') 
+    if (!comment) {
+      ctx.throw(404, 'comment not exists')
     }
     // 检查问题和回答下是否有该评论
     if (ctx.params.questionId && comment.questionId !== ctx.params.questionId) {
@@ -22,8 +22,8 @@ class commentController {
 
   async checkCommenter(ctx, next) {
     const { comment } = ctx.state
-    if (comment.commenter.toString() !== ctx.state.user._id) { 
-      ctx.throw(403, 'No Authority!') 
+    if (comment.commenter.toString() !== ctx.state.user._id) {
+      ctx.throw(403, 'No Authority!')
     }
     await next()
   }
@@ -36,10 +36,12 @@ class commentController {
     const skipPage = Math.max(parseInt(page), 1) - 1
     const q = new RegExp(ctx.query.q, "i")
     const { questionId, answerId } = ctx.params
+    // root comment 放在query而非路由里 可选参数都放在query里面
+    const { rootCommentId } = ctx.query
     ctx.body = await Comment
-      .find({ content: q, questionId, answerId }) // 模糊搜索-匹配问题
+      .find({ content: q, questionId, answerId, rootCommentId }) // 模糊搜索-匹配问题
       .limit(showPerPage).skip(skipPage * showPerPage)
-      .populate('commenter')
+      .populate('commenter replyTo')
   }
 
   async findById(ctx) {
@@ -48,14 +50,16 @@ class commentController {
     console.log('fields query: ' + fieldsSelected)
     const comment = await Comment.findById(ctx.params.id)
       .select(fieldsSelected)
-      .populate('commenter')
+      .populate('commenter rootCommentId replyTo')
     ctx.body = comment
   }
 
   async create(ctx) {
     // 先不用校验评论人的Id和问题Id，因为可以从ctx.state和路由上获得
     ctx.verifyParams({
-      content: { type: 'string', required: true }
+      content: { type: 'string', required: true },
+      rootCommentId: { type: 'string', required: false },
+      replyTo: { type: 'string', required: false }
     })
     // 保存新评论
     // 加上评论人Id和问题Id
@@ -76,7 +80,8 @@ class commentController {
       content: { type: 'string', required: true }
     })
     // 使用update之前要先调用checkcommentExist查找要更新的评论
-    await ctx.state.comment.update(ctx.request.body)
+    const { content } = ctx.request.body
+    await ctx.state.comment.update(content)
     ctx.body = ctx.state.comment
   }
 
