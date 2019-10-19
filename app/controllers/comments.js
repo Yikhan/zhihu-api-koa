@@ -47,7 +47,6 @@ class commentController {
   async findById(ctx) {
     const { fields } = ctx.query
     const fieldsSelected = getQueryFileds(fields)
-    console.log('fields query: ' + fieldsSelected)
     const comment = await Comment.findById(ctx.params.id)
       .select(fieldsSelected)
       .populate('commenter rootCommentId replyTo')
